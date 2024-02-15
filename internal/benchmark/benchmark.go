@@ -16,15 +16,9 @@ type Data struct {
 	// Time of measurement
 	Time time.Time `json:"time"`
 	// Memory percentages
-	CPU float64 `json:"cpu"`
-	// Virtual memory size
-	VMS uint64 `json:"vms"`
-	// Resident memory size
-	RSS uint64 `json:"rss"`
-	// Stack size
-	Stack uint64 `json:"stack"`
-	// High Water Mark
-	HWM uint64 `json:"hwm"`
+	CPU float32 `json:"cpu"`
+	// Memory usage
+	Memory float32 `json:"memory"`
 }
 
 func Run(cmd *exec.Cmd) error {
@@ -44,18 +38,15 @@ func Run(cmd *exec.Cmd) error {
 		if err != nil {
 			break
 		}
-		mem, err := p.MemoryInfo()
+		mem, err := p.MemoryPercent()
 		if err != nil {
 			break
 		}
 		Append(Data{
-			Title: title,
-			Time:  time.Now(),
-			CPU:   cpu,
-			VMS:   mem.VMS,
-			RSS:   mem.RSS,
-			Stack: mem.Stack,
-			HWM:   mem.HWM,
+			Title:  title,
+			Time:   time.Now(),
+			CPU:    float32(cpu),
+			Memory: mem,
 		})
 	}
 

@@ -106,15 +106,9 @@ function createChart(name, ...labels) {
             scales: {
                 xAxes: [{
                     display: false,
-                    ticks: {
-                        display: false,
-                    },
                 }],
                 yAxes: [{
                     display: false,
-                    ticks: {
-                        display: false,
-                    },
                 }]
             },
         },
@@ -126,12 +120,12 @@ function createChart(name, ...labels) {
     const ctx = canvas.getContext("2d");
     return new Chart(ctx, config);
 }
-const cpuChart = createChart("CPU", "CPU usage");
-const memChart = createChart("Memory", "Virtual memory size", "Resident memory size");
+const cpuChart = createChart("CPU", "CPU usage in %");
+const memChart = createChart("Memory", "Memory usage in %");
 let i = 0;
 let t = 0;
 ws.onmessage = function (event) {
-    if (i >= 100) {
+    if (i >= 50) {
         cpuChart.data.labels.shift();
         for (let i = 0; i < cpuChart.data.datasets.length; i++) {
             cpuChart.data.datasets[i].data.shift();
@@ -148,8 +142,7 @@ ws.onmessage = function (event) {
     cpuChart.data.datasets[0].data.push(data.cpu);
     cpuChart.update();
     memChart.data.labels.push(timeFormat(data.time));
-    memChart.data.datasets[0].data.push(data.vms);
-    memChart.data.datasets[1].data.push(data.rss);
+    memChart.data.datasets[0].data.push(data.memory);
     memChart.update();
     document.title = data.title;
     if (t) {
@@ -172,8 +165,8 @@ function hash(s) {
     return Math.abs(h);
 }
 function timeFormat(x) {
-    console.log(x);
-    return x;
+    const d = new Date(x);
+    return d.toLocaleTimeString();
 }`
 
 const styleStr = `:root {
